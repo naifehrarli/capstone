@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register User</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<nav class="navbar navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">Academic Permutation System</a>
+        <a href="/" class="btn btn-outline-light btn-sm">Home</a>
+    </div>
+</nav>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+
+                    <h2 class="text-center mb-2">Register User</h2>
+
+                    <p class="text-muted text-center mb-4">
+                        Complete each step to create your academic permutation profile.
+                    </p>
+
+                    <div class="progress mb-4">
+                        <div id="progressBar" class="progress-bar" style="width:16%"></div>
+                    </div>
+
+                    <form method="POST">
+
+                        <!-- STEP 1 -->
+                        <div class="form-step active">
+                            <h5 class="mb-3">Step 1: Personal Details</h5>
+
+                            <div class="mb-3">
+                                <label class="form-label">University Email</label>
+                                <input type="email" name="email" class="form-control" placeholder="example@university.edu.tr" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Name</label>
+                                <input type="text" name="name" class="form-control" placeholder="Enter full name" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Academic Rank</label>
+
+                                <select name="rank" class="form-select" required>
+                                    <option value="">Select academic rank</option>
+                                    <option>Research Assistant</option>
+                                    <option>Lecturer</option>
+                                    <option>Assistant Professor</option>
+                                    <option>Associate Professor</option>
+                                    <option>Professor</option>
+                                </select>
+                            </div>
+
+                            <button type="button" class="btn btn-primary w-100" onclick="nextStep()">
+                                Next
+                            </button>
+                        </div>
+
+                        <!-- STEP 2 -->
+                        <div class="form-step">
+                            <h5 class="mb-3">Step 2: Current City and University</h5>
+
+                            <div class="mb-3">
+                                <label class="form-label">Current City</label>
+
+                                <select name="current_city" id="current_city" class="form-select" onchange="updateUniversities('current')" required>
+                                    <option value="">Select current city</option>
+                                    <option>Istanbul</option>
+                                    <option>Ankara</option>
+                                    <option>Izmir</option>
+                                    <option>Bursa</option>
+                                    <option>Antalya</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Current University</label>
+
+<select name="current_university" id="current_university" class="form-select" onchange="updateDepartments('current')" required>                                    <option value="">Select city first</option>
+                                </select>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-outline-secondary w-50" onclick="previousStep()">Back</button>
+
+                                <button type="button" class="btn btn-primary w-50" onclick="nextStep()">Next</button>
+                            </div>
+                        </div>
+
+                        <!-- STEP 3 -->
+                        <div class="form-step">
+                            <h5 class="mb-3">Step 3: Current Faculty and Department</h5>
+
+                            <div class="mb-3">
+                                <label class="form-label">Current Faculty</label>
+
+                                <select name="current_faculty" id="current_faculty" class="form-select" onchange="updateDepartments('current')" required>
+                                    <option value="">Select current faculty</option>
+                                    <option>Engineering</option>
+                                    <option>Medicine</option>
+                                    <option>Law</option>
+                                    <option>Education</option>
+                                    <option>Arts and Sciences</option>
+                                    <option>Economics and Administrative Sciences</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Current Department</label>
+
+                                <select name="department" id="current_department" class="form-select" required>
+                                    <option value="">Select faculty first</option>
+                                </select>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-outline-secondary w-50" onclick="previousStep()">Back</button>
+
+                                <button type="button" class="btn btn-primary w-50" onclick="nextStep()">Next</button>
+                            </div>
+                        </div>
+
+                        <!-- STEP 4 -->
+                        <div class="form-step">
+                            <h5 class="mb-3">Step 4: Preferred City and University</h5>
+
+                            <div class="mb-3">
+                                <label class="form-label">Preferred City</label>
+
+                                <select name="preferred_city" id="preferred_city" class="form-select" onchange="updateUniversities('preferred')" required>
+                                    <option value="">Select preferred city</option>
+                                    <option>Istanbul</option>
+                                    <option>Ankara</option>
+                                    <option>Izmir</option>
+                                    <option>Bursa</option>
+                                    <option>Antalya</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Preferred University</label>
+
+<select name="preferred_university" id="preferred_university" class="form-select" onchange="updateDepartments('preferred'); updateTeachingLanguages();" required>                                    <option value="">Select city first</option>
+                                </select>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-outline-secondary w-50" onclick="previousStep()">Back</button>
+
+                                <button type="button" class="btn btn-primary w-50" onclick="nextStep()">Next</button>
+                            </div>
+                        </div>
+
+                        <!-- STEP 5 -->
+                        <div class="form-step">
+                            <h5 class="mb-3">Step 5: Preferred Faculty and Department</h5>
+
+                            <div class="mb-3">
+                                <label class="form-label">Preferred Faculty</label>
+
+                                <select name="preferred_faculty" id="preferred_faculty" class="form-select" onchange="updateDepartments('preferred')" required>
+                                    <option value="">Select preferred faculty</option>
+                                    <option>Engineering</option>
+                                    <option>Medicine</option>
+                                    <option>Law</option>
+                                    <option>Education</option>
+                                    <option>Arts and Sciences</option>
+                                    <option>Economics and Administrative Sciences</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label">Preferred Department</label>
+
+                                <select name="preferred_department" id="preferred_department" class="form-select" required>
+                                    <option value="">Select faculty first</option>
+                                </select>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-outline-secondary w-50" onclick="previousStep()">Back</button>
+
+                                <button type="button" class="btn btn-primary w-50" onclick="nextStep()">Next</button>
+                            </div>
+                        </div>
+
+                        <!-- STEP 6 -->
+                        <div class="form-step">
+                            <h5 class="mb-3">Step 6: Teaching Preferences</h5>
+
+                            <div class="mb-3">
+                                <label class="form-label">Preferred Teaching Language</label>
+
+                             <select name="teaching_language" id="preferred_teaching_language" class="form-select" required>
+                                 <option value="">Select language</option>
+                                  <option value="English">English</option>
+                                  <option value="Turkish">Turkish</option>
+                                  <option value="Turkish and English">Turkish and English</option>
+                            </select>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label">Preferred Teaching Mode</label>
+
+                                <select name="teaching_mode" class="form-select" required>
+                                    <option value="">Select teaching mode</option>
+                                    <option value="Face-to-face">Face-to-face</option>
+                                    <option value="Hybrid">Hybrid</option>
+                                </select>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-outline-secondary w-50" onclick="previousStep()">Back</button>
+
+                                <button type="submit" class="btn btn-primary w-50">
+                                    Complete Registration
+                                </button>
+                            </div>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+let currentStep = 0;
+const steps = document.querySelectorAll(".form-step");
+const progressBar = document.getElementById("progressBar");
+
+const emailToUniversity = {
+    "@bau.edu.tr": "Bahçeşehir University",
+    "@istanbul.edu.tr": "Istanbul University",
+    "@itu.edu.tr": "Istanbul Technical University",
+    "@bogazici.edu.tr": "Boğaziçi University",
+    "@marmara.edu.tr": "Marmara University",
+    "@yildiz.edu.tr": "Yıldız Technical University",
+    "@koc.edu.tr": "Koç University",
+    "@sabanciuniv.edu.tr": "Sabancı University",
+    "@bilgi.edu.tr": "Istanbul Bilgi University",
+    "@uskudar.edu.tr": "Üsküdar University",
+    "@medipol.edu.tr": "Istanbul Medipol University",
+    "@ankara.edu.tr": "Ankara University",
+    "@metu.edu.tr": "Middle East Technical University",
+    "@hacettepe.edu.tr": "Hacettepe University",
+    "@gazi.edu.tr": "Gazi University",
+    "@bilkent.edu.tr": "Bilkent University",
+    "@deu.edu.tr": "Dokuz Eylül University",
+    "@ege.edu.tr": "Ege University",
+    "@iyte.edu.tr": "Izmir Institute of Technology",
+    "@uludag.edu.tr": "Bursa Uludağ University",
+    "@akdeniz.edu.tr": "Akdeniz University"
+};
+
+const universitiesByCity = {
+    Istanbul: [
+        "Istanbul University",
+        "Istanbul Technical University",
+        "Boğaziçi University",
+        "Marmara University",
+        "Yıldız Technical University",
+        "Koç University",
+        "Sabancı University",
+        "Bahçeşehir University",
+        "Üsküdar University",
+        "Istanbul Medipol University",
+        "Istanbul Bilgi University",
+        "Istanbul Aydın University",
+        "Istanbul Kültür University",
+        "Galatasaray University",
+        "Mimar Sinan Fine Arts University"
+    ],
+    Ankara: [
+        "Ankara University",
+        "Middle East Technical University",
+        "Hacettepe University",
+        "Gazi University",
+        "Bilkent University",
+        "TOBB University of Economics and Technology",
+        "Başkent University",
+        "Çankaya University",
+        "Atılım University",
+        "TED University"
+    ],
+    Izmir: [
+        "Ege University",
+        "Dokuz Eylül University",
+        "Izmir Institute of Technology",
+        "Izmir University of Economics",
+        "Yaşar University"
+    ],
+    Bursa: [
+        "Bursa Uludağ University",
+        "Bursa Technical University"
+    ],
+    Antalya: [
+        "Akdeniz University",
+        "Antalya Bilim University"
+    ]
+};
+
+const departmentsByFaculty = {
+    Engineering: [
+        "Computer Engineering",
+        "Software Engineering",
+        "Electrical and Electronics Engineering",
+        "Mechanical Engineering",
+        "Civil Engineering",
+        "Industrial Engineering",
+        "Chemical Engineering",
+        "Environmental Engineering",
+        "Mechatronics Engineering",
+        "Biomedical Engineering"
+    ],
+    Medicine: [
+        "Medicine",
+        "Surgery",
+        "Internal Medicine",
+        "Pediatrics",
+        "Public Health",
+        "Anatomy",
+        "Cardiology",
+        "Neurology"
+    ],
+    Law: [
+        "Public Law",
+        "Private Law",
+        "International Law",
+        "Criminal Law",
+        "Commercial Law",
+        "Constitutional Law"
+    ],
+    Education: [
+        "Primary Education",
+        "Mathematics Education",
+        "Science Education",
+        "English Language Teaching",
+        "Guidance and Psychological Counseling",
+        "Preschool Education"
+    ],
+    "Arts and Sciences": [
+        "Psychology",
+        "Sociology",
+        "Mathematics",
+        "Physics",
+        "Chemistry",
+        "History",
+    ],
+    "Economics and Administrative Sciences": [
+        "Business Administration",
+        "Economics",
+        "International Relations",
+        "Political Science and Public Administration",
+        "Finance",
+        "Management Information Systems",
+        "International Trade",
+        "Informatics",
+        "Political Science and International Relations"
+    ]
+};
+const specialDepartmentsByUniversityAndFaculty = {
+    "Galatasaray University": {
+        "ALL": "ALL"
+    },
+
+    "Marmara University": {
+        "Economics and Administrative Sciences": [
+            "Political Science and Public Administration",
+            "Business Administration",
+            "Informatics",
+            "Political Science and International Relations"
+        ],
+        "Arts and Sciences": [
+            "French Translation and Interpreting",
+            "French Language Teaching"
+        ],
+        "Medicine": [
+            "Faculty of Medicine"
+        ]
+    },
+
+    "Yıldız Technical University": {
+        "Arts and Sciences": [
+            "French Translation and Interpreting",
+            "German Translation and Interpreting"
+        ]
+    },
+
+    "Hacettepe University": {
+        "Arts and Sciences": [
+            "French Translation and Interpreting",
+            "French Language and Literature"
+        ]
+    },
+
+    "Istanbul University": {
+        "Arts and Sciences": [
+            "Italian Language and Literature",
+            "Russian Language and Literature",
+            "Chinese Language and Literature"
+        ]
+    },
+
+    "Ankara University": {
+        "Arts and Sciences": [
+            "Italian Language and Literature",
+            "Russian Language and Literature",
+            "Spanish Language and Literature"
+        ]
+    }
+};
+const specialLanguageRules = [
+    {
+        language: "French",
+        universities: {
+            "Galatasaray University": "ALL",
+            "Marmara University": [
+                "Political Science and Public Administration",
+                "French Translation and Interpreting",
+                "French Language Teaching"
+            ],
+            "Yıldız Technical University": [
+                "French Translation and Interpreting"
+            ],
+            "Hacettepe University": [
+                "French Translation and Interpreting",
+                "French Language and Literature"
+            ]
+        }
+    },
+    {
+        language: "German",
+        universities: {
+            "Marmara University": [
+                "Business Administration",
+                "Informatics",
+                "Political Science and International Relations",
+                "Faculty of Medicine",
+                "Faculty of Dentistry"
+            ],
+            "Yıldız Technical University": [
+                "German Translation and Interpreting"
+            ]
+        }
+    },
+    {
+        language: "Arabic",
+        universities: {
+            "Istanbul University": [
+                "Faculty of Theology"
+            ],
+            "Marmara University": [
+                "Faculty of Theology"
+            ],
+            "Ankara University": [
+                "Faculty of Theology"
+            ]
+        }
+    },
+    {
+        language: "Italian",
+        universities: {
+            "Istanbul University": [
+                "Italian Language and Literature"
+            ],
+            "Ankara University": [
+                "Italian Language and Literature"
+            ]
+        }
+    },
+    {
+        language: "Russian",
+        universities: {
+            "Istanbul University": [
+                "Russian Language and Literature"
+            ],
+            "Ankara University": [
+                "Russian Language and Literature"
+            ]
+        }
+    },
+    {
+        language: "Chinese",
+        universities: {
+            "Istanbul University": [
+                "Chinese Language and Literature"
+            ]
+        }
+    },
+    {
+        language: "Spanish",
+        universities: {
+            "Ankara University": [
+                "Spanish Language and Literature"
+            ]
+        }
+    }
+];
+
+function updateTeachingLanguages() {
+    const university = document.getElementById("preferred_university").value;
+    const languageSelect = document.getElementById("preferred_teaching_language");
+
+    languageSelect.innerHTML = `
+        <option value="">Select language</option>
+        <option value="English">English</option>
+        <option value="Turkish">Turkish</option>
+        <option value="Turkish and English">Turkish and English</option>
+    `;
+
+    if (
+        university === "Galatasaray University" ||
+        university === "Marmara University" ||
+        university === "Yıldız Technical University" ||
+        university === "Hacettepe University"
+    ) {
+        languageSelect.innerHTML += `<option value="French">French</option>`;
+    }
+
+    if (
+        university === "Marmara University" ||
+        university === "Yıldız Technical University"
+    ) {
+        languageSelect.innerHTML += `<option value="German">German</option>`;
+    }
+
+    if (
+        university === "Istanbul University" ||
+        university === "Marmara University" ||
+        university === "Ankara University"
+    ) {
+        languageSelect.innerHTML += `<option value="Arabic">Arabic</option>`;
+    }
+
+    if (
+        university === "Istanbul University" ||
+        university === "Ankara University"
+    ) {
+        languageSelect.innerHTML += `
+            <option value="Italian">Italian</option>
+            <option value="Russian">Russian</option>
+        `;
+    }
+
+    if (university === "Istanbul University") {
+        languageSelect.innerHTML += `<option value="Chinese">Chinese</option>`;
+    }
+
+    if (university === "Ankara University") {
+        languageSelect.innerHTML += `<option value="Spanish">Spanish</option>`;
+    }
+}
+
+function addLanguageOption(language) {
+    const languageSelect = document.getElementById("preferred_teaching_language");
+    const existingOptions = Array.from(languageSelect.options).map(option => option.value);
+
+    if (!existingOptions.includes(language)) {
+        const option = document.createElement("option");
+        option.value = language;
+        option.textContent = language;
+        languageSelect.appendChild(option);
+    }
+}
+
+function showStep(index) {
+    steps.forEach(step => step.classList.remove("active"));
+    steps[index].classList.add("active");
+    progressBar.style.width = ((index + 1) / steps.length) * 100 + "%";
+}
+
+function currentStepIsValid() {
+    const inputs = steps[currentStep].querySelectorAll("input, select");
+
+    for (let input of inputs) {
+        if (!input.checkValidity()) {
+            input.reportValidity();
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function nextStep() {
+    if (!currentStepIsValid()) {
+        return;
+    }
+
+    if (currentStep < steps.length - 1) {
+        currentStep++;
+        showStep(currentStep);
+    }
+}
+
+function previousStep() {
+    if (currentStep > 0) {
+        currentStep--;
+        showStep(currentStep);
+    }
+}
+
+function updateUniversities(type) {
+    const city = document.getElementById(type + "_city").value;
+    const select = document.getElementById(type + "_university");
+
+    select.innerHTML = '<option value="">Select university</option>';
+
+    (universitiesByCity[city] || []).forEach(u => {
+        let option = document.createElement("option");
+        option.value = u;
+        option.textContent = u;
+        select.appendChild(option);
+    });
+
+    if (type === "preferred") {
+    document.getElementById("preferred_department").innerHTML = '<option value="">Select faculty first</option>';
+    updateTeachingLanguages();
+}
+}
+function updateDepartments(type) {
+    const faculty = document.getElementById(type + "_faculty").value;
+    const university = document.getElementById(type + "_university").value;
+    const select = document.getElementById(type + "_department");
+
+    select.innerHTML = '<option value="">Select department</option>';
+
+    let departments = departmentsByFaculty[faculty] || [];
+
+    const universityRules = specialDepartmentsByUniversityAndFaculty[university];
+
+    if (universityRules) {
+        if (universityRules["ALL"] === "ALL") {
+            departments = departmentsByFaculty[faculty] || [];
+        } else if (universityRules[faculty]) {
+            departments = departments.concat(universityRules[faculty]);
+        }
+    }
+
+    departments.forEach(d => {
+        let option = document.createElement("option");
+        option.value = d;
+        option.textContent = d;
+        select.appendChild(option);
+    });
+
+    if (type === "preferred") {
+        updateTeachingLanguages();
+    }
+}
+
+document.querySelector('input[name="email"]').addEventListener("blur", function () {
+    const email = this.value.toLowerCase();
+
+    for (let domain in emailToUniversity) {
+        if (email.endsWith(domain)) {
+            alert("University detected: " + emailToUniversity[domain]);
+            break;
+        }
+    }
+});
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+

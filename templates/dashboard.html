@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ t["dashboard"] }}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<nav class="navbar navbar-dark">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a class="navbar-brand" href="/">{{ t["app_name"] }}</a>
+
+        <div class="d-flex align-items-center gap-3">
+            {% if user %}
+            <a href="/profile/{{ user['id'] }}" class="btn btn-outline-light btn-sm">
+                {{ t["my_profile"] }}
+            </a>
+            {% endif %}
+
+            <div class="dropdown">
+                <button class="btn btn-outline-light btn-sm no-arrow" type="button" data-bs-toggle="dropdown">
+                    ⋮
+                </button>
+
+                <ul class="dropdown-menu dropdown-menu-end shadow">
+                    <li><a class="dropdown-item" href="/set-language/en">🇬🇧 {{ t["english"] }}</a></li>
+                    <li><a class="dropdown-item" href="/set-language/tr">🇹🇷 {{ t["turkish"] }}</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <button class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                            {{ t["logout"] }}
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="d-flex">
+
+    <div class="sidebar bg-white p-4">
+        <h4 class="mb-4">{{ t["dashboard"] }}</h4>
+
+        <button class="btn btn-light w-100 mb-2 active-sidebar" onclick="showSection('home', this)">
+            <i class="fa-solid fa-house me-2"></i> {{ t["home"] }}
+        </button>
+
+        <button class="btn btn-light w-100 mb-2" onclick="showSection('users', this)">
+            <i class="fa-solid fa-users me-2"></i> {{ t["registered_users"] }}
+        </button>
+
+        <button class="btn btn-light w-100 mb-2" onclick="showSection('matches', this)">
+            <i class="fa-solid fa-bullseye me-2"></i> {{ t["potential_matches"] }}
+        </button>
+
+        <button class="btn btn-light w-100 mb-2" onclick="showSection('advancedMatches', this)">
+            <i class="fa-solid fa-filter me-2"></i> {{ t["advanced_matches"] }}
+        </button>
+
+        <button class="btn btn-light w-100 mb-2" onclick="showSection('starredMatches', this)">
+            <i class="fa-solid fa-star me-2"></i> {{ t["starred_matches"] }}
+        </button>
+    </div>
+
+    <div class="main-content flex-grow-1 p-4">
+
+        <div id="dashboardTop" style="display:none;">
+
+            <div class="dashboard-hero mb-4">
+                <h2>{{ t["welcome"] }}, {{ session.email }} 👋</h2>
+                <p>{{ t["logged_in_message"] }}</p>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <span>{{ t["registered_users"] }}</span>
+                        <h3>{{ users|length }}</h3>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <span>{{ t["potential_matches"] }}</span>
+                        <h3>{{ matches|length }}</h3>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <span>{{ t["score"] }}</span>
+                        {% if matches %}
+                        <h3>{{ matches[0]["score"] }}%</h3>
+                        {% else %}
+                        <h3>0%</h3>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <input type="text"
+                           id="searchInput"
+                           class="form-control"
+                           placeholder="Search users..."
+                           onkeyup="searchCards()">
+                </div>
+            </div>
+
+        </div>
+
+        <div id="home">
+
+            <div class="card shadow-sm border-0 mb-4 home-card-large">
+                <div class="card-body p-5">
+
+                    <div class="row align-items-center g-4">
+
+                        <div class="col-lg-9">
+                            <span class="soft-badge mb-3">
+                                <i class="fa-solid fa-wand-magic-sparkles me-2"></i>
+                                {{ t["smart_matching"] }}
+                            </span>
+
+                            <h1 class="fw-bold mb-3">
+                                {{ t["app_name"] }}
+                            </h1>
+
+                            <p class="text-muted fs-5 mb-4">
+                                {{ t["home_description"] }}
+                            </p>
+
+                            <div class="row g-4 mt-2">
+
+                                <div class="col-md-3">
+                                    <div class="feature-card">
+                                        <div class="feature-icon blue-icon">
+                                            <i class="fa-solid fa-shield-halved"></i>
+                                        </div>
+                                        <div>
+                                            <h6>{{ t["secure_trusted"] }}</h6>
+                                            <p>{{ t["secure_desc"] }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="feature-card">
+                                        <div class="feature-icon green-icon">
+                                            <i class="fa-solid fa-brain"></i>
+                                        </div>
+                                        <div>
+                                            <h6>{{ t["smart_matching"] }}</h6>
+                                            <p>{{ t["smart_matching_desc"] }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="feature-card">
+                                        <div class="feature-icon purple-icon">
+                                            <i class="fa-solid fa-users"></i>
+                                        </div>
+                                        <div>
+                                            <h6>{{ t["academic_collaboration"] }}</h6>
+                                            <p>{{ t["academic_collaboration_desc"] }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="feature-card">
+                                        <div class="feature-icon yellow-icon">
+                                            <i class="fa-solid fa-globe"></i>
+                                        </div>
+                                        <div>
+                                            <h6>{{ t["preference_based"] }}</h6>
+                                            <p>{{ t["preference_based_desc"] }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 text-center">
+                            <div class="home-illustration">
+                                <i class="fa-solid fa-building-columns"></i>
+                                <i class="fa-solid fa-earth-europe"></i>
+                                <i class="fa-solid fa-graduation-cap"></i>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <h2 class="mb-3">{{ t["how_it_works"] }}</h2>
+
+            <div class="row g-4 mb-4">
+
+                <div class="col-lg-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body p-4">
+                            <div class="step-wrapper">
+                                <div class="step-circle">1</div>
+                                <div class="step-icon blue-bg">
+                                    <i class="fa-regular fa-user"></i>
+                                </div>
+                            </div>
+
+                            <h4>{{ t["create_profile"] }}</h4>
+                            <p class="text-muted">
+                                {{ t["create_profile_desc"] }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body p-4">
+                            <div class="step-wrapper">
+                                <div class="step-circle">2</div>
+                                <div class="step-icon green-bg">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </div>
+                            </div>
+
+                            <h4>{{ t["explore_users"] }}</h4>
+                            <p class="text-muted">
+                               {{ t["explore_users_desc"] }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body p-4">
+                            <div class="step-wrapper">
+                                <div class="step-circle">3</div>
+                                <div class="step-icon purple-bg">
+                                    <i class="fa-solid fa-bullseye"></i>
+                                </div>
+                            </div>
+
+                            <h4>{{ t["receive_matches"] }}</h4>
+                            <p class="text-muted">
+                                {{ t["receive_matches_desc"] }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row g-4">
+
+                <div class="col-lg-7">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body p-4">
+                            <div class="d-flex gap-3 align-items-start">
+                                <div class="small-icon blue-icon">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                </div>
+
+                                <div>
+                                    <h3>{{ t["about_system"] }}</h3>
+                                    <p class="text-muted mb-0">
+                                        {{ t["about_system_desc"] }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body p-4">
+                            <div class="d-flex gap-3 align-items-start mb-3">
+                                <div class="small-icon green-icon">
+                                    <i class="fa-solid fa-star"></i>
+                                </div>
+                                <h3 class="mb-0">{{ t["why_use_platform"] }}</h3>
+                            </div>
+
+                            <p><i class="fa-solid fa-circle-check text-success me-2"></i>{{ t["benefit_1"] }}</p>
+                            <p><i class="fa-solid fa-circle-check text-success me-2"></i>{{ t["benefit_2"] }}</p>
+                            <p><i class="fa-solid fa-circle-check text-success me-2"></i>{{ t["benefit_3"] }}</p>
+                            <p class="mb-0"><i class="fa-solid fa-circle-check text-success me-2"></i>{{ t["benefit_4"] }}</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div id="users" style="display:none;">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h2>{{ t["registered_users"] }}</h2>
+                    <p class="text-muted mb-0">{{ t["first_five_users"] }}</p>
+                </div>
+
+                <button class="btn btn-primary" onclick="toggleUsers()" id="showUsersBtn"
+                        data-show-label="{{ t['show_all_users'] }}"
+                        data-hide-label="{{ t['hide_users'] }}">
+                    {{ t["show_all_users"] }}
+                </button>
+            </div>
+
+            <div class="row g-4">
+                {% for user in users %}
+                <div class="col-md-6 col-lg-4 searchable-card user-item {% if loop.index > 5 %}extra-user{% endif %}">
+                    <div class="card user-card shadow-sm h-100">
+                        <div class="card-body">
+                            <h5>{{ user["name"] }}</h5>
+                            <small class="text-muted">{{ user["rank"] }}</small>
+
+                            <p class="mt-3"><strong>{{ t["department"] }}:</strong> {{ user["department"] }}</p>
+                            <p><strong>{{ t["current_university"] }}:</strong> {{ user["current_university"] }}</p>
+                            <p><strong>{{ t["preferred_university"] }}:</strong> {{ user["preferred_university"] }}</p>
+
+                            <span class="soft-badge">{{ user["current_city"] }}</span>
+                            <span class="soft-badge">{{ user["preferred_city"] }}</span>
+                            <span class="soft-badge">{{ user["teaching_language"] or "None" }}</span>
+
+                            <a href="/profile/{{ user['id'] }}" class="btn btn-outline-primary w-100 mt-3">
+                                {{ t["view_profile"] }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div id="matches" style="display:none;">
+
+            <div class="mb-4">
+                <h2>{{ t["potential_matches"] }}</h2>
+                <p class="text-muted mb-0">
+                    Your top five potential matches are shown below. Click a match to understand why it was recommended.
+                </p>
+            </div>
+
+            {% if matches %}
+
+            <div class="row g-4">
+                {% for match in matches[:5] %}
+
+                <div class="col-md-6 col-lg-4 searchable-card">
+                    <div class="card match-card shadow-sm h-100 clickable-card"
+                         data-bs-toggle="modal"
+                         data-bs-target="#matchModal{{ loop.index }}">
+
+                        <div class="card-body">
+
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h5 class="text-success mb-0">{{ t["match_found"] }}</h5>
+
+                                {% if loop.index == 1 %}
+                                <span class="badge bg-success rounded-pill">
+                                    {{ t["top_match"] }}
+                                </span>
+                                {% endif %}
+                            </div>
+
+                            <p>
+                                <strong>{{ match.user1 }}</strong>
+                                ↔
+                                <strong>{{ match.user2 }}</strong>
+                            </p>
+
+                            <p>
+                                <strong>{{ t["score"] }}:</strong>
+                                {{ match.score }}%
+                            </p>
+
+                            <div class="progress mb-3">
+                                <div class="progress-bar" data-score="{{ match.score }}"></div>
+                            </div>
+
+                            <p class="text-success fw-bold mb-1">
+                                {{ match.label }}
+                            </p>
+
+                            <small class="text-muted">
+                                Click to view match explanation.
+                            </small>
+
+                        </div>
+                    </div>
+                </div>
+
+                {% endfor %}
+            </div>
+
+            {% for match in matches[:5] %}
+            <div class="modal fade" id="matchModal{{ loop.index }}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content rounded-4">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title">{{ t["why_this_match"] }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <div class="modal-body">
+
+                            <div class="row g-4">
+
+                                <div class="col-md-6">
+                                    <div class="match-detail-box h-100">
+                                        <h5>{{ t["matched_user_contact"] }}</h5>
+                                        <p><strong>{{ t["name"] }}:</strong> {{ match.matched_user["name"] }}</p>
+                                        <p><strong>{{ t["email"] }}:</strong> {{ match.matched_user["email"] }}</p>
+                                        <p><strong>Rank:</strong> {{ match.matched_user["rank"] }}</p>
+                                        <p><strong>Department:</strong> {{ match.matched_user["department"] }}</p>
+                                        <p><strong>Current University:</strong> {{ match.matched_user["current_university"] }}</p>
+                                        <p><strong>Current City:</strong> {{ match.matched_user["current_city"] }}</p>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="match-detail-box h-100">
+                                        <h5>{{ t["their_preferences"] }}</h5>
+                                        <p><strong>{{ t["preferred_university"] }}:</strong> {{ match.matched_user["preferred_university"] }}</p>
+                                        <p><strong>{{ t["preferred_city"] }}:</strong> {{ match.matched_user["preferred_city"] }}</p>
+                                        <p><strong>{{ t["preferred_faculty"] }}:</strong> {{ match.matched_user["preferred_faculty"] }}</p>
+                                        <p><strong>{{ t["preferred_department"] }}:</strong> {{ match.matched_user["preferred_department"] }}</p>
+                                        <p><strong>{{ t["teaching_language"] }}:</strong> {{ match.matched_user["teaching_language"] }}</p>
+                                        <p><strong>{{ t["teaching_mode"] }}:</strong> {{ match.matched_user["teaching_mode"] }}</p>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="match-detail-box mt-4">
+                                <h5>{{ t["why_this_user_matches_you"] }}</h5>
+
+                                <p><strong>{{ t["compatibility_score"] }}:</strong> {{ match.score }}%</p>
+                                <p><strong>{{ t["match_level"] }}:</strong> {{ match.label }}</p>
+
+                                <ul class="mb-0">
+                                    {% for reason in match.reasons %}
+                                    <li>{{ reason }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+
+                        </div>
+
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" data-bs-dismiss="modal">
+                                 {{ t["close"] }}
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+            {% else %}
+
+            <div class="card shadow-sm">
+                <div class="card-body p-5 text-center">
+                    <h4>{{ t["no_matches"] }}</h4>
+                    <p class="text-muted mb-0">
+                        Try updating your profile to discover more compatible matches.
+                    </p>
+                </div>
+            </div>
+
+            {% endif %}
+
+        </div>
+
+        <div id="advancedMatches" style="display:none;">
+
+            <div class="mb-4">
+                <h2>{{ t["advanced_match"] }}</h2>
+                <p class="text-muted mb-0">
+                    {{ t["advanced_matches_desc"] }}
+                </p>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+
+                    <form method="GET" action="/dashboard" class="row g-3">
+                        <input type="hidden" name="section" value="advancedMatches">
+
+                        <div class="col-md-4">
+                            <label class="form-label">{{ t["new_city_preference"] }}</label>
+                            <select name="city_filter" class="form-select">
+                                <option value="">{{ t["all_cities"] }}</option>
+                                <option value="Istanbul" {% if selected_city == "Istanbul" %}selected{% endif %}>Istanbul</option>
+                                <option value="Ankara" {% if selected_city == "Ankara" %}selected{% endif %}>Ankara</option>
+                                <option value="Izmir" {% if selected_city == "Izmir" %}selected{% endif %}>Izmir</option>
+                                <option value="Bursa" {% if selected_city == "Bursa" %}selected{% endif %}>Bursa</option>
+                                <option value="Antalya" {% if selected_city == "Antalya" %}selected{% endif %}>Antalya</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">{{ t["new_faculty_preference"] }}</label>
+                            <select name="faculty_filter" id="advancedFaculty" class="form-select" onchange="updateAdvancedDepartments()">
+                                <option value="">{{ t["all_faculties"] }}</option>
+                                <option value="Engineering" {% if selected_faculty == "Engineering" %}selected{% endif %}>Engineering</option>
+                                <option value="Medicine" {% if selected_faculty == "Medicine" %}selected{% endif %}>Medicine</option>
+                                <option value="Law" {% if selected_faculty == "Law" %}selected{% endif %}>Law</option>
+                                <option value="Education" {% if selected_faculty == "Education" %}selected{% endif %}>Education</option>
+                                <option value="Arts and Sciences" {% if selected_faculty == "Arts and Sciences" %}selected{% endif %}>Arts and Sciences</option>
+                                <option value="Economics and Administrative Sciences" {% if selected_faculty == "Economics and Administrative Sciences" %}selected{% endif %}>Economics and Administrative Sciences</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">{{ t["new_department_preference"] }}</label>
+                            <select name="department_filter" id="advancedDepartment" class="form-select">
+                                <option value="">{{ t["all_departments"] }}</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12 d-flex justify-content-end gap-2">
+                            <a href="/dashboard?section=advancedMatches" class="btn btn-outline-secondary">
+                                {{ t["clear"] }}
+                            </a>
+
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa-solid fa-magnifying-glass me-2"></i>{{ t["find_matches"] }}
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+            {% if advanced_matches %}
+
+            <div class="row g-4">
+                {% for match in advanced_matches %}
+
+                <div class="col-md-6 col-lg-4 searchable-card advanced-match-card">
+                    <div class="card match-card shadow-sm h-100">
+                        <div class="card-body">
+
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h5 class="text-primary mb-0">{{ t["advanced_match"] }}</h5>
+                                <span class="badge bg-primary rounded-pill">
+                                    {{ match.score }}%
+                                </span>
+                            </div>
+
+                            <p>
+                                <strong>{{ match.user1 }}</strong>
+                                ↔
+                                <strong>{{ match.user2 }}</strong>
+                            </p>
+
+                            <p><strong>Name:</strong> {{ match.matched_user["name"] }}</p>
+                            <p><strong>Email:</strong> {{ match.matched_user["email"] }}</p>
+                            <p><strong>Faculty:</strong> {{ match.matched_user["current_faculty"] }}</p>
+                            <p><strong>Department:</strong> {{ match.matched_user["department"] }}</p>
+                            <p><strong>Current City:</strong> {{ match.matched_user["current_city"] }}</p>
+                            <p><strong>Preferred City:</strong> {{ match.matched_user["preferred_city"] }}</p>
+                            <p><strong>Preferred Department:</strong> {{ match.matched_user["preferred_department"] }}</p>
+
+                            <p class="text-success fw-bold mb-1">
+                                {{ match.label }}
+                            </p>
+
+                            <a href="/profile/{{ match.matched_user['id'] }}" class="btn btn-outline-primary w-100 mt-3">
+                                {{ t["view_profile"] }}
+                            </a>
+
+                            {% if match.matched_user["id"] in starred_ids %}
+                            <a href="/unstar-match/{{ match.matched_user['id'] }}" class="btn btn-warning w-100 mt-2">
+                                <i class="fa-solid fa-star me-2"></i>Starred
+                            </a>
+                            {% else %}
+                            <a href="/star-match/{{ match.matched_user['id'] }}" class="btn btn-outline-warning w-100 mt-2">
+                                <i class="fa-regular fa-star me-2"></i>{{ t["star_match"] }}
+                            </a>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+
+                {% endfor %}
+            </div>
+
+            {% else %}
+
+            <div class="card shadow-sm">
+                <div class="card-body p-5 text-center">
+                    <h4>No advanced matches found</h4>
+                    <p class="text-muted mb-0">
+                        {{ t["advanced_matches_desc"] }}
+                    </p>
+                </div>
+            </div>
+
+            {% endif %}
+
+        </div>
+
+        <div id="starredMatches" style="display:none;">
+
+            <div class="mb-4">
+                <h2>Starred Matches</h2>
+                <p class="text-muted mb-0">
+                    {{ t["saved_matches_message"] }}
+                </p>
+            </div>
+
+            {% if starred_matches %}
+
+            <div class="row g-4">
+                {% for match in starred_matches %}
+
+                <div class="col-md-6 col-lg-4 searchable-card">
+                    <div class="card match-card shadow-sm h-100">
+                        <div class="card-body">
+
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h5 class="text-warning mb-0">
+                                    <i class="fa-solid fa-star me-2"></i>Starred Match
+                                </h5>
+
+                                <span class="badge bg-warning text-dark rounded-pill">
+                                    {{ match.score }}%
+                                </span>
+                            </div>
+
+                            <p>
+                                <strong>{{ match.user1 }}</strong>
+                                ↔
+                                <strong>{{ match.user2 }}</strong>
+                            </p>
+
+                            <p><strong>Name:</strong> {{ match.matched_user["name"] }}</p>
+                            <p><strong>Email:</strong> {{ match.matched_user["email"] }}</p>
+                            <p><strong>Department:</strong> {{ match.matched_user["department"] }}</p>
+                            <p><strong>Faculty:</strong> {{ match.matched_user["current_faculty"] }}</p>
+                            <p><strong>Current City:</strong> {{ match.matched_user["current_city"] }}</p>
+                            <p><strong>Preferred City:</strong> {{ match.matched_user["preferred_city"] }}</p>
+
+                            <p class="text-success fw-bold mb-1">
+                                {{ match.label }}
+                            </p>
+
+                            <a href="/profile/{{ match.matched_user['id'] }}" class="btn btn-outline-primary w-100 mt-3">
+                                View Profile
+                            </a>
+
+                            <a href="/unstar-match/{{ match.matched_user['id'] }}" class="btn btn-outline-danger w-100 mt-2">
+                                <i class="fa-solid fa-trash me-2"></i>Remove Star
+                            </a>
+
+                        </div>
+                    </div>
+                </div>
+
+                {% endfor %}
+            </div>
+
+            {% else %}
+
+            <div class="card shadow-sm">
+                <div class="card-body p-5 text-center">
+                    <i class="fa-regular fa-star fa-3x text-warning mb-3"></i>
+                    <h4>{{ t["no_starred_matches"] }}</h4>
+                    <p class="text-muted mb-0">
+                        {{ t["go_to_advanced_matches"] }}
+                    </p>
+                </div>
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="logoutModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4">
+
+            <div class="modal-header">
+                <h5 class="modal-title">{{ t["confirm_logout"] }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                {{ t["logout_question"] }}
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">{{ t["cancel"] }}</button>
+                <a href="/logout" class="btn btn-danger">{{ t["yes_logout"] }}</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+function showSection(section, button) {
+    ["home", "users", "matches", "advancedMatches", "starredMatches"].forEach(id => {
+        document.getElementById(id).style.display = "none";
+    });
+
+    document.getElementById(section).style.display = "block";
+
+    if (section === "home") {
+        document.getElementById("dashboardTop").style.display = "none";
+    } else {
+        document.getElementById("dashboardTop").style.display = "block";
+    }
+
+    document.querySelectorAll(".sidebar .btn").forEach(btn => {
+        btn.classList.remove("active-sidebar");
+    });
+
+    if (button) {
+        button.classList.add("active-sidebar");
+    }
+}
+
+function toggleUsers() {
+    const btn = document.getElementById("showUsersBtn");
+    const expanded = btn.dataset.expanded === "true";
+
+    document.querySelectorAll(".extra-user").forEach(user => {
+        user.style.display = expanded ? "none" : "block";
+    });
+
+    if (expanded) {
+        btn.dataset.expanded = "false";
+        btn.textContent = btn.dataset.showLabel;
+        document.getElementById("users").scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+        btn.dataset.expanded = "true";
+        btn.textContent = btn.dataset.hideLabel;
+    }
+}
+
+function searchCards() {
+    let input = document.getElementById("searchInput").value.toLowerCase();
+    let cards = document.querySelectorAll(".searchable-card");
+
+    cards.forEach(card => {
+        let text = card.innerText.toLowerCase();
+
+        if (text.includes(input)) {
+            card.classList.remove("d-none");
+        } else {
+            card.classList.add("d-none");
+        }
+    });
+}
+
+document.querySelectorAll(".progress-bar").forEach(bar => {
+    bar.style.width = bar.dataset.score + "%";
+});
+
+document.querySelectorAll(".extra-user").forEach(user => {
+    user.style.display = "none";
+});
+
+document.getElementById("dashboardTop").style.display = "none";
+
+
+const advancedDepartmentsByFaculty = {
+    Engineering: [
+        "Computer Engineering",
+        "Software Engineering",
+        "Electrical and Electronics Engineering",
+        "Mechanical Engineering",
+        "Civil Engineering",
+        "Industrial Engineering",
+        "Chemical Engineering",
+        "Environmental Engineering",
+        "Mechatronics Engineering",
+        "Biomedical Engineering"
+    ],
+    Medicine: [
+        "Medicine",
+        "Surgery",
+        "Internal Medicine",
+        "Pediatrics",
+        "Public Health",
+        "Anatomy",
+        "Cardiology",
+        "Neurology"
+    ],
+    Law: [
+        "Public Law",
+        "Private Law",
+        "International Law",
+        "Criminal Law",
+        "Commercial Law",
+        "Constitutional Law"
+    ],
+    Education: [
+        "Primary Education",
+        "Mathematics Education",
+        "Science Education",
+        "English Language Teaching",
+        "Guidance and Psychological Counseling",
+        "Preschool Education"
+    ],
+    "Arts and Sciences": [
+        "Psychology",
+        "Sociology",
+        "Mathematics",
+        "Physics",
+        "Chemistry",
+        "History",
+        "Turkish Language and Literature",
+        "Molecular Biology and Genetics"
+    ],
+    "Economics and Administrative Sciences": [
+        "Business Administration",
+        "Economics",
+        "International Relations",
+        "Political Science and Public Administration",
+        "Finance",
+        "Management Information Systems",
+        "International Trade"
+    ]
+};
+
+function updateAdvancedDepartments() {
+    let faculty = document.getElementById("advancedFaculty").value;
+    let departmentSelect = document.getElementById("advancedDepartment");
+    let selectedDepartment = "{{ selected_department|default('') }}";
+
+    departmentSelect.innerHTML = '<option value="">{{ t["all_departments"] }}</option>';
+
+    if (faculty && advancedDepartmentsByFaculty[faculty]) {
+        advancedDepartmentsByFaculty[faculty].forEach(department => {
+            let option = document.createElement("option");
+            option.value = department;
+            option.textContent = department;
+
+            if (department === selectedDepartment) {
+                option.selected = true;
+            }
+
+            departmentSelect.appendChild(option);
+        });
+    }
+}
+
+updateAdvancedDepartments();
+
+let activeSection = "{{ active_section|default('home') }}";
+
+if (activeSection === "advancedMatches") {
+    showSection("advancedMatches", document.querySelector("button[onclick*='advancedMatches']"));
+}
+
+if (activeSection === "starredMatches") {
+    showSection("starredMatches", document.querySelector("button[onclick*='starredMatches']"));
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
+
+
+
+
+

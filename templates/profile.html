@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<nav class="navbar navbar-dark">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a class="navbar-brand" href="/dashboard">Academic Permutation System</a>
+
+        <a href="/dashboard" class="btn btn-outline-light btn-sm">Back</a>
+    </div>
+</nav>
+
+<div class="container py-5">
+
+    <div class="profile-header mb-4">
+        <div>
+            <h1>{{ user["name"] }} - {{ t["profile"] }}</h1>
+            <p>{{ user['email'] }}</p>
+        </div>
+
+       {% if session.email == user["email"] %}
+<a href="/edit-profile/{{ user['id'] }}" class="btn btn-primary">
+    {{ t["edit_profile"] }}
+</a>
+{% endif %}
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-lg-4">
+            <div class="card profile-card shadow-sm h-100">
+                <div class="card-body text-center">
+                    {% if user['profile_picture'] %}
+    <img src="{{ url_for('static', filename=user['profile_picture']) }}"
+         class="profile-avatar-image"
+         alt="Profile Picture">
+{% else %}
+    <div class="profile-avatar">
+        {{ user['name'][0]|upper }}
+    </div>
+{% endif %}
+
+                    <h3 class="mt-3">{{ user['name'] }}</h3>
+                    <p class="text-muted mb-1">{{ user['rank'] }}</p>
+                    <span class="badge bg-primary">{{ user['current_university'] }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card shadow-sm profile-card">
+                <div class="card-body">
+                    <h4 class="section-title">{{ t["current_academic_info"] }}</h4>
+
+                    <div class="info-grid">
+                        <div>
+                            <span>City</span>
+                            <strong>{{ user['current_city'] }}</strong>
+                        </div>
+
+                        <div>
+                            <span>University</span>
+                            <strong>{{ user['current_university'] }}</strong>
+                        </div>
+
+                        <div>
+                            <span>Faculty</span>
+                            <strong>{{ user['current_faculty'] }}</strong>
+                        </div>
+
+                        <div>
+                            <span>Department</span>
+                            <strong>{{ user['department'] }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm profile-card mt-4">
+                <div class="card-body">
+                    <h4 class="section-title">{{ t["preferred_academic_info"] }}</h4>
+
+                    <div class="info-grid">
+                        <div>
+                            <span>Preferred City</span>
+                            <strong>{{ user['preferred_city'] }}</strong>
+                        </div>
+
+                        <div>
+                            <span>Preferred University</span>
+                            <strong>{{ user['preferred_university'] }}</strong>
+                        </div>
+
+                        <div>
+                            <span>Preferred Faculty</span>
+                            <strong>{{ user['preferred_faculty'] }}</strong>
+                        </div>
+
+                        <div>
+                            <span>Preferred Department</span>
+                            <strong>{{ user['preferred_department'] }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm profile-card mt-4">
+                <div class="card-body">
+                    <h4 class="section-title">{{ t["teaching_preferences"] }}</h4>
+
+                    <div class="info-grid">
+                        <div>
+                            <span>Teaching Language</span>
+                            <strong>{{ user['teaching_language'] }}</strong>
+                        </div>
+
+                        <div>
+                            <span>Teaching Mode</span>
+                            <strong>{{ user['teaching_mode'] }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>
+
