@@ -657,7 +657,7 @@ def star_match(matched_user_id):
     conn.commit()
     conn.close()
 
-    return redirect("/dashboard?section=starredMatches")
+    return redirect(request.referrer or "/dashboard")
 
 
 @app.route("/unstar-match/<int:matched_user_id>")
@@ -676,7 +676,7 @@ def unstar_match(matched_user_id):
     conn.commit()
     conn.close()
 
-    return redirect("/dashboard?section=starredMatches")
+    return redirect(request.referrer or "/dashboard")
 
 @app.route("/profile/<int:user_id>")
 def profile(user_id):
