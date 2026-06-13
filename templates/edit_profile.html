@@ -12,7 +12,14 @@
 <nav class="navbar navbar-dark">
     <div class="container d-flex justify-content-between align-items-center">
         <a class="navbar-brand" href="/dashboard">{{ t["app_name"] }}</a>
-        <a href="/profile/{{ user['id'] }}" class="btn btn-outline-light btn-sm">{{ t["back_to_profile"] }}</a>
+        <button
+    type="button"
+    class="btn btn-outline-light btn-sm"
+    onclick="history.back()">
+
+    {{ t["back_to_profile"] }}
+
+</button>
     </div>
 </nav>
 
