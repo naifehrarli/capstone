@@ -561,3 +561,70 @@ h1, h2, h4 {
     display: block;
     margin: 0 auto;
 }
+
+.password-field {
+    position: relative;
+}
+
+.password-field .form-control {
+    padding-right: 2.75rem;
+}
+
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 0.75rem;
+    transform: translateY(-50%);
+    border: 0;
+    background: transparent;
+    color: #64748b;
+    padding: 0;
+    line-height: 1;
+}
+
+.password-toggle:hover,
+.password-toggle:focus {
+    color: #2563eb;
+}
+
+.password-strength {
+    height: 1.25rem;
+}
+
+.password-strength::before {
+    content: "";
+    display: block;
+    height: 0.35rem;
+    border-radius: 999px;
+    background-color: #e2e8f0;
+}
+
+.password-strength-bar {
+    height: 0.35rem;
+    border-radius: 999px;
+    background-color: transparent;
+    margin-top: -0.35rem;
+    transition: width 0.2s ease, background-color 0.2s ease;
+    width: 0;
+}
+
+.password-strength-label {
+    display: block;
+    margin-top: 0.25rem;
+}
+
+.password-strength.strength-weak .password-strength-bar {
+    background-color: #ef4444;
+}
+
+.password-strength.strength-fair .password-strength-bar {
+    background-color: #f59e0b;
+}
+
+.password-strength.strength-good .password-strength-bar {
+    background-color: #3b82f6;
+}
+
+.password-strength.strength-strong .password-strength-bar {
+    background-color: #22c55e;
+}

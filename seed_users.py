@@ -1,8 +1,10 @@
 import sqlite3
 import random
 import unicodedata
+from werkzeug.security import generate_password_hash
 
 random.seed(42)
+DEFAULT_PASSWORD = "password123"
 
 universities_by_city = {
     "Istanbul": [
@@ -131,13 +133,13 @@ while inserted < 50 and attempts < 5000:
 
     cursor.execute("""
         INSERT INTO users (
-            email, name, rank,
+            email, password_hash, name, rank,
             current_city, current_university, current_faculty, department,
             preferred_city, preferred_university, preferred_faculty, preferred_department,
             teaching_language, teaching_mode
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
-        email, name, rank,
+        email, generate_password_hash(DEFAULT_PASSWORD), name, rank,
         current_city, current_university, current_faculty, department,
         preferred_city, preferred_university, preferred_faculty, preferred_department,
         teaching_language, teaching_mode,

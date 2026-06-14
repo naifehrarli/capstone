@@ -427,10 +427,10 @@
                                         <h5>{{ t["matched_user_contact"] }}</h5>
                                         <p><strong>{{ t["name"] }}:</strong> {{ match.matched_user["name"] }}</p>
                                         <p><strong>{{ t["email"] }}:</strong> {{ match.matched_user["email"] }}</p>
-                                        <p><strong>Rank:</strong> {{ match.matched_user["rank"] }}</p>
-                                        <p><strong>Department:</strong> {{ match.matched_user["department"] }}</p>
-                                        <p><strong>Current University:</strong> {{ match.matched_user["current_university"] }}</p>
-                                        <p><strong>Current City:</strong> {{ match.matched_user["current_city"] }}</p>
+                                        <p><strong>{{ t["rank"] }}:</strong> {{ match.matched_user["rank"] }}</p>
+                                        <p><strong>{{ t["department"] }}:</strong> {{ match.matched_user["department"] }}</p>
+                                        <p><strong>{{ t["current_university"] }}:</strong> {{ match.matched_user["current_university"] }}</p>
+                                        <p><strong>{{ t["current_city"] }}:</strong> {{ match.matched_user["current_city"] }}</p>
                                     </div>
                                 </div>
 
@@ -504,7 +504,7 @@
                     <form method="GET" action="/dashboard" class="row g-3">
                         <input type="hidden" name="section" value="advancedMatches">
 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label class="form-label">{{ t["new_city_preference"] }}</label>
                             <select name="city_filter" class="form-select">
                                 <option value="">{{ t["all_cities"] }}</option>
@@ -516,7 +516,7 @@
                             </select>
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label class="form-label">{{ t["new_faculty_preference"] }}</label>
                             <select name="faculty_filter" id="advancedFaculty" class="form-select" onchange="updateAdvancedDepartments()">
                                 <option value="">{{ t["all_faculties"] }}</option>
@@ -529,11 +529,28 @@
                             </select>
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label class="form-label">{{ t["new_department_preference"] }}</label>
                             <select name="department_filter" id="advancedDepartment" class="form-select">
                                 <option value="">{{ t["all_departments"] }}</option>
                             </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <label class="form-label mb-0" for="minScoreFilter">{{ t["minimum_match_score"] }}</label>
+                                <span class="soft-badge" id="minScoreValue">{{ selected_min_score }}%</span>
+                            </div>
+                            <input
+                                type="range"
+                                name="min_score_filter"
+                                id="minScoreFilter"
+                                class="form-range mt-2"
+                                min="0"
+                                max="100"
+                                step="10"
+                                value="{{ selected_min_score }}"
+                                oninput="updateMinScoreLabel(this.value)">
                         </div>
 
                         <div class="col-12 d-flex justify-content-end gap-2">
@@ -572,13 +589,13 @@
                                 <strong>{{ match.user2 }}</strong>
                             </p>
 
-                            <p><strong>Name:</strong> {{ match.matched_user["name"] }}</p>
-                            <p><strong>Email:</strong> {{ match.matched_user["email"] }}</p>
-                            <p><strong>Faculty:</strong> {{ match.matched_user["current_faculty"] }}</p>
-                            <p><strong>Department:</strong> {{ match.matched_user["department"] }}</p>
-                            <p><strong>Current City:</strong> {{ match.matched_user["current_city"] }}</p>
-                            <p><strong>Preferred City:</strong> {{ match.matched_user["preferred_city"] }}</p>
-                            <p><strong>Preferred Department:</strong> {{ match.matched_user["preferred_department"] }}</p>
+                            <p><strong>{{ t["name"] }}:</strong> {{ match.matched_user["name"] }}</p>
+                            <p><strong>{{ t["email"] }}:</strong> {{ match.matched_user["email"] }}</p>
+                            <p><strong>{{ t["faculty"] }}:</strong> {{ match.matched_user["current_faculty"] }}</p>
+                            <p><strong>{{ t["department"] }}:</strong> {{ match.matched_user["department"] }}</p>
+                            <p><strong>{{ t["current_city"] }}:</strong> {{ match.matched_user["current_city"] }}</p>
+                            <p><strong>{{ t["preferred_city"] }}:</strong> {{ match.matched_user["preferred_city"] }}</p>
+                            <p><strong>{{ t["preferred_department"] }}:</strong> {{ match.matched_user["preferred_department"] }}</p>
 
                             <p class="text-success fw-bold mb-1">
                                 {{ match.label }}
@@ -590,7 +607,7 @@
 
                             {% if match.matched_user["id"] in starred_ids %}
                             <a href="/unstar-match/{{ match.matched_user['id'] }}" class="btn btn-warning w-100 mt-2">
-                                <i class="fa-solid fa-star me-2"></i>Starred
+                                <i class="fa-solid fa-star me-2"></i>{{ t["starred"] }}
                             </a>
                             {% else %}
                             <a href="/star-match/{{ match.matched_user['id'] }}" class="btn btn-outline-warning w-100 mt-2">
@@ -609,7 +626,7 @@
 
             <div class="card shadow-sm">
                 <div class="card-body p-5 text-center">
-                    <h4>No advanced matches found</h4>
+                    <h4>{{ t["no_advanced_matches_found"] }}</h4>
                     <p class="text-muted mb-0">
                         {{ t["advanced_matches_desc"] }}
                     </p>
@@ -623,7 +640,7 @@
         <div id="starredMatches" style="display:none;">
 
             <div class="mb-4">
-                <h2>Starred Matches</h2>
+                <h2>{{ t["starred_matches"] }}</h2>
                 <p class="text-muted mb-0">
                     {{ t["saved_matches_message"] }}
                 </p>
@@ -640,7 +657,7 @@
 
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <h5 class="text-warning mb-0">
-                                    <i class="fa-solid fa-star me-2"></i>Starred Match
+                                    <i class="fa-solid fa-star me-2"></i>{{ t["starred_match"] }}
                                 </h5>
 
                                 <span class="badge bg-warning text-dark rounded-pill">
@@ -654,19 +671,19 @@
                                 <strong>{{ match.user2 }}</strong>
                             </p>
 
-                            <p><strong>Name:</strong> {{ match.matched_user["name"] }}</p>
-                            <p><strong>Email:</strong> {{ match.matched_user["email"] }}</p>
-                            <p><strong>Department:</strong> {{ match.matched_user["department"] }}</p>
-                            <p><strong>Faculty:</strong> {{ match.matched_user["current_faculty"] }}</p>
-                            <p><strong>Current City:</strong> {{ match.matched_user["current_city"] }}</p>
-                            <p><strong>Preferred City:</strong> {{ match.matched_user["preferred_city"] }}</p>
+                            <p><strong>{{ t["name"] }}:</strong> {{ match.matched_user["name"] }}</p>
+                            <p><strong>{{ t["email"] }}:</strong> {{ match.matched_user["email"] }}</p>
+                            <p><strong>{{ t["department"] }}:</strong> {{ match.matched_user["department"] }}</p>
+                            <p><strong>{{ t["faculty"] }}:</strong> {{ match.matched_user["current_faculty"] }}</p>
+                            <p><strong>{{ t["current_city"] }}:</strong> {{ match.matched_user["current_city"] }}</p>
+                            <p><strong>{{ t["preferred_city"] }}:</strong> {{ match.matched_user["preferred_city"] }}</p>
 
                             <p class="text-success fw-bold mb-1">
                                 {{ match.label }}
                             </p>
 
                             <a href="/profile/{{ match.matched_user['id'] }}" class="btn btn-outline-primary w-100 mt-3">
-                                View Profile
+                                {{ t["view_profile"] }}
                             </a>
 
                             <button
@@ -677,7 +694,7 @@
     data-userid="{{ match.matched_user['id'] }}"
     onclick="setUnstarUser(this)">
 
-    <i class="fa-solid fa-trash me-2"></i>Remove Star
+    <i class="fa-solid fa-trash me-2"></i>{{ t["remove_star"] }}
 
 </button>
 
@@ -713,7 +730,7 @@
         <div class="modal-content">
 
             <div class="modal-header">
-                <h5 class="modal-title">Remove Star</h5>
+                <h5 class="modal-title">{{ t["remove_star"] }}</h5>
 
                 <button
                     type="button"
@@ -723,7 +740,7 @@
             </div>
 
             <div class="modal-body">
-                Are you sure you want to remove this starred match?
+                {{ t["remove_star_question"] }}
             </div>
 
             <div class="modal-footer">
@@ -732,14 +749,14 @@
                     type="button"
                     class="btn btn-secondary"
                     data-bs-dismiss="modal">
-                    Cancel
+                    {{ t["cancel"] }}
                 </button>
 
                 <a
                     id="confirmUnstarBtn"
                     href="#"
                     class="btn btn-danger">
-                    Remove
+                    {{ t["remove"] }}
                 </a>
 
             </div>
@@ -927,6 +944,10 @@ function updateAdvancedDepartments() {
 }
 
 updateAdvancedDepartments();
+
+function updateMinScoreLabel(value) {
+    document.getElementById("minScoreValue").textContent = value + "%";
+}
 
 let activeSection = "{{ active_section|default('home') }}";
 

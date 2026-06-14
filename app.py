@@ -1,5 +1,7 @@
 import os
+from urllib.parse import quote
 from werkzeug.utils import secure_filename
+from werkzeug.security import check_password_hash, generate_password_hash
 import sqlite3
 import random
 from flask import Flask, render_template, request, redirect, session
@@ -78,6 +80,25 @@ translations = {
         "new_city_preference": "New City Preference",
         "new_faculty_preference": "New Faculty Preference",
         "new_department_preference": "New Department Preference",
+        "minimum_match_score": "Minimum Match Score",
+        "profile_picture": "Profile Picture",
+        "change_password": "Change Password",
+        "leave_password_blank": "Leave these fields blank to keep your current password.",
+        "current_password": "Current Password",
+        "new_password": "New Password",
+        "confirm_new_password": "Confirm New Password",
+        "password_strength": "Password strength",
+        "password_strength_weak": "Weak",
+        "password_strength_fair": "Fair",
+        "password_strength_good": "Good",
+        "password_strength_strong": "Strong",
+        "password_strength_very_strong": "Very strong",
+        "back": "Back",
+        "no_advanced_matches_found": "No advanced matches found",
+        "starred_match": "Starred Match",
+        "remove_star": "Remove Star",
+        "remove_star_question": "Are you sure you want to remove this starred match?",
+        "remove": "Remove",
         "all_cities": "All Cities",
         "all_faculties": "All Faculties",
         "all_departments": "All Departments",
@@ -198,6 +219,25 @@ translations = {
         "new_city_preference": "Yeni Şehir Tercihi",
         "new_faculty_preference": "Yeni Fakülte Tercihi",
         "new_department_preference": "Yeni Bölüm Tercihi",
+        "minimum_match_score": "Minimum Eşleşme Puanı",
+        "profile_picture": "Profil Fotoğrafı",
+        "change_password": "Şifreyi Değiştir",
+        "leave_password_blank": "Mevcut şifrenizi korumak için bu alanları boş bırakın.",
+        "current_password": "Mevcut Şifre",
+        "new_password": "Yeni Şifre",
+        "confirm_new_password": "Yeni Şifreyi Onayla",
+        "password_strength": "Şifre gücü",
+        "password_strength_weak": "Zayıf",
+        "password_strength_fair": "Orta",
+        "password_strength_good": "İyi",
+        "password_strength_strong": "Güçlü",
+        "password_strength_very_strong": "Çok güçlü",
+        "back": "Geri",
+        "no_advanced_matches_found": "Gelişmiş eşleşme bulunamadı",
+        "starred_match": "Kaydedilen Eşleşme",
+        "remove_star": "Kaydı Kaldır",
+        "remove_star_question": "Bu kaydedilen eşleşmeyi kaldırmak istediğinizden emin misiniz?",
+        "remove": "Kaldır",
         "all_cities": "Tüm Şehirler",
         "all_faculties": "Tüm Fakülteler",
         "all_departments": "Tüm Bölümler",
@@ -281,6 +321,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             email TEXT,
+            password_hash TEXT,
             name TEXT NOT NULL,
             rank TEXT NOT NULL,
             department TEXT NOT NULL,
@@ -301,6 +342,9 @@ def init_db():
     if "email" not in columns:
         cursor.execute("ALTER TABLE users ADD COLUMN email TEXT")
 
+    if "password_hash" not in columns:
+        cursor.execute("ALTER TABLE users ADD COLUMN password_hash TEXT")
+
     if "current_faculty" not in columns:
         cursor.execute("ALTER TABLE users ADD COLUMN current_faculty TEXT")
 
@@ -315,6 +359,9 @@ def init_db():
     
     if "teaching_mode" not in columns:
         cursor.execute("ALTER TABLE users ADD COLUMN teaching_mode TEXT")
+
+    if "profile_picture" not in columns:
+        cursor.execute("ALTER TABLE users ADD COLUMN profile_picture TEXT")
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS starred_matches (
@@ -338,6 +385,20 @@ def get_language():
 def get_translations():
     lang = get_language()
     return translations.get(lang, translations["en"])
+
+def profile_back_url(user_id):
+    back_url = request.args.get("back_url")
+
+    if back_url:
+        return back_url
+
+    referrer = request.referrer or ""
+    own_profile_path = f"/profile/{user_id}"
+
+    if referrer and "/edit-profile/" not in referrer and own_profile_path not in referrer:
+        return referrer
+
+    return "/dashboard"
 
 def calculate_match(u1, u2):
     score = 0
@@ -380,6 +441,7 @@ def login():
 
     if request.method == "POST":
         email = request.form["email"].strip().lower()
+        password = request.form["password"]
 
         if not university_email(email):
             error = "Please use a valid university email."
@@ -392,13 +454,29 @@ def login():
         cursor.execute("SELECT * FROM users WHERE email = ?", (email,))
         user = cursor.fetchone()
 
-        conn.close()
-
         if user:
-            session["email"] = email
-            return redirect("/dashboard")
+            password_hash = user["password_hash"]
+
+            if not password_hash:
+                cursor.execute(
+                    "UPDATE users SET password_hash = ? WHERE id = ?",
+                    (generate_password_hash(password), user["id"])
+                )
+                conn.commit()
+                session["email"] = email
+                conn.close()
+                return redirect("/dashboard")
+
+            if check_password_hash(password_hash, password):
+                session["email"] = email
+                conn.close()
+                return redirect("/dashboard")
+
+            error = "Incorrect password. Please try again."
         else:
             error = "This email is not registered yet. Please register first."
+
+        conn.close()
 
     return render_template("login.html", error=error)
 
@@ -411,6 +489,8 @@ def logout():
 def register():
     if request.method == "POST":
         email = request.form["email"].strip().lower()
+        password = request.form["password"]
+        confirm_password = request.form["confirm_password"]
         name = request.form["name"]
         rank = request.form["rank"]
         current_city = request.form["current_city"]
@@ -425,7 +505,22 @@ def register():
         teaching_mode = request.form["teaching_mode"]
 
         if not university_email(email):
-            return "Please use a valid university email."
+            return render_template(
+                "register.html",
+                error="Please use a valid university email."
+            )
+
+        if len(password) < 8:
+            return render_template(
+                "register.html",
+                error="Password must be at least 8 characters long."
+            )
+
+        if password != confirm_password:
+            return render_template(
+                "register.html",
+                error="Passwords do not match."
+            )
 
         conn = sqlite3.connect("database.db")
         cursor = conn.cursor()
@@ -435,18 +530,21 @@ def register():
 
         if existing_user:
             conn.close()
-            return "This email is already registered. Please login instead."
+            return render_template(
+                "register.html",
+                error="This email is already registered. Please login instead."
+            )
 
         cursor.execute("""
             INSERT INTO users (
-                email, name, rank,
+                email, password_hash, name, rank,
                 current_city, current_university, current_faculty, department,
                 preferred_city, preferred_university, preferred_faculty, preferred_department,
                 teaching_language, teaching_mode
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
-            email, name, rank,
+            email, generate_password_hash(password), name, rank,
             current_city, current_university, current_faculty, department,
             preferred_city, preferred_university, preferred_faculty, preferred_department,
             teaching_language, teaching_mode
@@ -559,6 +657,12 @@ def dashboard():
     city_filter = request.args.get("city_filter", "")
     faculty_filter = request.args.get("faculty_filter", "")
     department_filter = request.args.get("department_filter", "")
+    try:
+        min_score_filter = int(request.args.get("min_score_filter", 0))
+    except ValueError:
+        min_score_filter = 0
+
+    min_score_filter = max(0, min(min_score_filter, 100))
     active_section = request.args.get("section", "home")
 
     advanced_matches = []
@@ -585,6 +689,9 @@ def dashboard():
 
         if city_ok and faculty_ok and department_ok:
             score = calculate_match(current_user_dict, other_user)
+            if score < min_score_filter:
+                continue
+
             label = match_label(score)
 
             advanced_matches.append({
@@ -595,6 +702,8 @@ def dashboard():
                 "matched_user": other_user,
                 "reasons": [t["reason_advanced"]]
             })
+
+    advanced_matches = sorted(advanced_matches, key=lambda x: x["score"], reverse=True)
 
     starred_matches = []
 
@@ -627,6 +736,7 @@ def dashboard():
         selected_city=city_filter,
         selected_faculty=faculty_filter,
         selected_department=department_filter,
+        selected_min_score=min_score_filter,
         active_section=active_section,
         top_matches=top_matches,
         user=current_user,
@@ -698,6 +808,7 @@ def profile(user_id):
     return render_template(
         "profile.html",
         user=user,
+        back_url=profile_back_url(user_id),
         t=get_translations(),
         lang=get_language()
     )
@@ -722,7 +833,10 @@ def edit_profile(user_id):
         conn.close()
         return redirect("/dashboard")
 
+    back_url = profile_back_url(user_id)
+
     if request.method == "POST":
+        back_url = request.form.get("back_url") or back_url
         name = request.form["name"]
         rank = request.form["rank"]
         current_city = request.form["current_city"]
@@ -735,7 +849,44 @@ def edit_profile(user_id):
         preferred_department = request.form["preferred_department"]
         teaching_language = request.form["teaching_language"]
         teaching_mode = request.form["teaching_mode"]
+        current_password = request.form.get("current_password", "")
+        new_password = request.form.get("new_password", "")
+        confirm_password = request.form.get("confirm_password", "")
         uploaded_file = request.files.get("profile_picture")
+
+        if new_password or confirm_password:
+            if len(new_password) < 8:
+                conn.close()
+                return render_template(
+                    "edit_profile.html",
+                    user=user,
+                    error="New password must be at least 8 characters long.",
+                    back_url=back_url,
+                    t=get_translations(),
+                    lang=get_language()
+                )
+
+            if new_password != confirm_password:
+                conn.close()
+                return render_template(
+                    "edit_profile.html",
+                    user=user,
+                    error="New passwords do not match.",
+                    back_url=back_url,
+                    t=get_translations(),
+                    lang=get_language()
+                )
+
+            if user["password_hash"] and not check_password_hash(user["password_hash"], current_password):
+                conn.close()
+                return render_template(
+                    "edit_profile.html",
+                    user=user,
+                    error="Current password is incorrect.",
+                    back_url=back_url,
+                    t=get_translations(),
+                    lang=get_language()
+                )
 
         profile_picture = user["profile_picture"]
         if uploaded_file and uploaded_file.filename:
@@ -779,14 +930,21 @@ def edit_profile(user_id):
             teaching_language, teaching_mode, profile_picture, user_id
         ))
 
+        if new_password:
+            cursor.execute(
+                "UPDATE users SET password_hash = ? WHERE id = ?",
+                (generate_password_hash(new_password), user_id)
+            )
+
         conn.commit()
         conn.close()
-        return redirect(f"/profile/{user_id}")
+        return redirect(f"/profile/{user_id}?back_url={quote(back_url, safe='')}")
 
     conn.close()
     return render_template(
     "edit_profile.html",
     user=user,
+    back_url=back_url,
     t=get_translations(),
     lang=get_language()
 )
@@ -802,11 +960,5 @@ def set_language(language):
 if __name__ == "__main__":
     init_db()
     app.run(debug=True)
-
-
-
-
-
-
 
 
