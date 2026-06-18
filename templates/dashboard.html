@@ -18,7 +18,7 @@
 
         <div class="d-flex align-items-center gap-3">
             {% if user %}
-            <a href="/profile/{{ user['id'] }}" class="btn btn-outline-light btn-sm">
+            <a href="/profile/{{ user['id'] }}" class="btn btn-outline-light btn-sm" data-profile-link="true">
                 {{ t["my_profile"] }}
             </a>
             {% endif %}
@@ -337,7 +337,7 @@
                             <span class="soft-badge">{{ user["preferred_city"] }}</span>
                             <span class="soft-badge">{{ user["teaching_language"] or "None" }}</span>
 
-                            <a href="/profile/{{ user['id'] }}" class="btn btn-outline-primary w-100 mt-3">
+                            <a href="/profile/{{ user['id'] }}" class="btn btn-outline-primary w-100 mt-3" data-profile-link="true">
                                 {{ t["view_profile"] }}
                             </a>
                         </div>
@@ -601,7 +601,7 @@
                                 {{ match.label }}
                             </p>
 
-                            <a href="/profile/{{ match.matched_user['id'] }}" class="btn btn-outline-primary w-100 mt-3">
+                            <a href="/profile/{{ match.matched_user['id'] }}" class="btn btn-outline-primary w-100 mt-3" data-profile-link="true">
                                 {{ t["view_profile"] }}
                             </a>
 
@@ -682,7 +682,7 @@
                                 {{ match.label }}
                             </p>
 
-                            <a href="/profile/{{ match.matched_user['id'] }}" class="btn btn-outline-primary w-100 mt-3">
+                            <a href="/profile/{{ match.matched_user['id'] }}" class="btn btn-outline-primary w-100 mt-3" data-profile-link="true">
                                 {{ t["view_profile"] }}
                             </a>
 
@@ -789,7 +789,7 @@
 </div>
 
 <script>
-function showSection(section, button) {
+function showSection(section, button, updateUrl = true) {
     ["home", "users", "matches", "advancedMatches", "starredMatches"].forEach(id => {
         document.getElementById(id).style.display = "none";
     });
@@ -810,11 +810,13 @@ function showSection(section, button) {
         button.classList.add("active-sidebar");
     }
 
-    history.replaceState(
-    null,
-    "",
-    "/dashboard?section=" + section
-    );
+    if (updateUrl) {
+        history.replaceState(
+        null,
+        "",
+        "/dashboard?section=" + section
+        );
+    }
 }
 
 function toggleUsers() {
@@ -951,13 +953,33 @@ function updateMinScoreLabel(value) {
 
 let activeSection = "{{ active_section|default('home') }}";
 
-if (activeSection === "advancedMatches") {
-    showSection("advancedMatches", document.querySelector("button[onclick*='advancedMatches']"));
+const sectionButtons = {
+    users: document.querySelector("button[onclick*='users']"),
+    matches: document.querySelector("button[onclick*='matches']"),
+    advancedMatches: document.querySelector("button[onclick*='advancedMatches']"),
+    starredMatches: document.querySelector("button[onclick*='starredMatches']")
+};
+
+if (activeSection !== "home" && sectionButtons[activeSection]) {
+    showSection(activeSection, sectionButtons[activeSection], false);
 }
 
-if (activeSection === "starredMatches") {
-    showSection("starredMatches", document.querySelector("button[onclick*='starredMatches']"));
+function prepareProfileBackLinks() {
+    document.querySelectorAll("[data-profile-link='true']").forEach(link => {
+        link.addEventListener("click", function () {
+            localStorage.setItem("scrollPosition", window.scrollY);
+
+            const profileUrl = new URL(this.href, window.location.origin);
+            const returnUrl = window.location.pathname + window.location.search;
+
+            profileUrl.searchParams.set("back_url", returnUrl);
+            this.href = profileUrl.pathname + profileUrl.search;
+        });
+    });
 }
+
+prepareProfileBackLinks();
+
 function confirmUnstar(userId) {
     if (confirm("Are you sure you want to remove this starred match?")) {
         window.location.href = "/unstar-match/" + userId;
