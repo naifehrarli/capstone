@@ -145,6 +145,81 @@ translations = {
         "reason_partial": "This user has partial academic compatibility with your profile.",
         "reason_advanced": "This user matches your advanced search preferences.",
         "reason_starred": "You saved this match from Advanced Matches.",
+        "login": "Login",
+        "register_user": "Register User",
+        "register_new_user": "Register New User",
+        "landing_description": "A decision-support platform for university staff registration and preference-based matching.",
+        "login_description": "Enter your registered university email and password.",
+        "new_user_register_here": "New user? Register here",
+        "university_email": "University Email",
+        "password": "Password",
+        "confirm_password": "Confirm Password",
+        "enter_password": "Enter your password",
+        "password_min_placeholder": "At least 8 characters",
+        "confirm_password_placeholder": "Re-enter password",
+        "show_password": "Show password",
+        "hide_password": "Hide password",
+        "show_confirmed_password": "Show confirmed password",
+        "hide_confirmed_password": "Hide confirmed password",
+        "register_description": "Complete each step to create your academic permutation profile.",
+        "step_personal_details": "Step 1: Personal Details",
+        "step_current_city_university": "Step 2: Current City and University",
+        "step_current_faculty_department": "Step 3: Current Faculty and Department",
+        "step_preferred_city_university": "Step 4: Preferred City and University",
+        "step_preferred_faculty_department": "Step 5: Preferred Faculty and Department",
+        "step_teaching_preferences": "Step 6: Teaching Preferences",
+        "select_academic_rank": "Select academic rank",
+        "select_current_city": "Select current city",
+        "select_city_first": "Select city first",
+        "select_current_faculty": "Select current faculty",
+        "select_faculty_first": "Select faculty first",
+        "select_preferred_city": "Select preferred city",
+        "select_preferred_faculty": "Select preferred faculty",
+        "select_language": "Select language",
+        "select_teaching_mode": "Select teaching mode",
+        "select_university": "Select university",
+        "select_department": "Select department",
+        "current_faculty": "Current Faculty",
+        "preferred_teaching_language": "Preferred Teaching Language",
+        "preferred_teaching_mode": "Preferred Teaching Mode",
+        "complete_registration": "Complete Registration",
+        "next": "Next",
+        "full_name_placeholder": "Enter full name",
+        "rank_research_assistant": "Research Assistant",
+        "rank_lecturer": "Lecturer",
+        "rank_assistant_professor": "Assistant Professor",
+        "rank_associate_professor": "Associate Professor",
+        "rank_professor": "Professor",
+        "faculty_engineering": "Engineering",
+        "faculty_medicine": "Medicine",
+        "faculty_law": "Law",
+        "faculty_education": "Education",
+        "faculty_arts_sciences": "Arts and Sciences",
+        "faculty_economics_admin": "Economics and Administrative Sciences",
+        "language_english": "English",
+        "language_turkish": "Turkish",
+        "language_turkish_english": "Turkish and English",
+        "language_french": "French",
+        "language_german": "German",
+        "language_arabic": "Arabic",
+        "language_italian": "Italian",
+        "language_russian": "Russian",
+        "language_chinese": "Chinese",
+        "language_spanish": "Spanish",
+        "mode_face_to_face": "Face-to-face",
+        "mode_hybrid": "Hybrid",
+        "city_istanbul": "Istanbul",
+        "city_ankara": "Ankara",
+        "city_izmir": "Izmir",
+        "city_bursa": "Bursa",
+        "city_antalya": "Antalya",
+        "university_detected": "University detected",
+        "error_valid_university_email": "Please use a valid university email.",
+        "error_password_length": "Password must be at least 8 characters long.",
+        "error_passwords_do_not_match": "Passwords do not match.",
+        "error_email_registered": "This email is already registered. Please login instead.",
+        "error_incorrect_password": "Incorrect password. Please try again.",
+        "error_email_not_registered": "This email is not registered yet. Please register first.",
 
 
     },
@@ -284,6 +359,81 @@ translations = {
         "reason_partial": "Bu kullanıcı profilinizle kısmi akademik uyuma sahip.",
         "reason_advanced": "Bu kullanıcı gelişmiş arama tercihlerinizle eşleşiyor.",
         "reason_starred": "Bu eşleşmeyi Gelişmiş Eşleşmeler bölümünden kaydettiniz.",
+        "login": "Giriş Yap",
+        "register_user": "Kullanıcı Kaydı",
+        "register_new_user": "Yeni Kullanıcı Kaydı",
+        "landing_description": "Üniversite personeli kaydı ve tercih tabanlı eşleştirme için karar destek platformu.",
+        "login_description": "Kayıtlı üniversite e-postanızı ve şifrenizi girin.",
+        "new_user_register_here": "Yeni kullanıcı mısınız? Buradan kayıt olun",
+        "university_email": "Üniversite E-postası",
+        "password": "Şifre",
+        "confirm_password": "Şifreyi Onayla",
+        "enter_password": "Şifrenizi girin",
+        "password_min_placeholder": "En az 8 karakter",
+        "confirm_password_placeholder": "Şifreyi tekrar girin",
+        "show_password": "Şifreyi göster",
+        "hide_password": "Şifreyi gizle",
+        "show_confirmed_password": "Onay şifresini göster",
+        "hide_confirmed_password": "Onay şifresini gizle",
+        "register_description": "Akademik permütasyon profilinizi oluşturmak için her adımı tamamlayın.",
+        "step_personal_details": "Adım 1: Kişisel Bilgiler",
+        "step_current_city_university": "Adım 2: Mevcut Şehir ve Üniversite",
+        "step_current_faculty_department": "Adım 3: Mevcut Fakülte ve Bölüm",
+        "step_preferred_city_university": "Adım 4: Tercih Edilen Şehir ve Üniversite",
+        "step_preferred_faculty_department": "Adım 5: Tercih Edilen Fakülte ve Bölüm",
+        "step_teaching_preferences": "Adım 6: Ders Tercihleri",
+        "select_academic_rank": "Akademik ünvan seçin",
+        "select_current_city": "Mevcut şehir seçin",
+        "select_city_first": "Önce şehir seçin",
+        "select_current_faculty": "Mevcut fakülte seçin",
+        "select_faculty_first": "Önce fakülte seçin",
+        "select_preferred_city": "Tercih edilen şehir seçin",
+        "select_preferred_faculty": "Tercih edilen fakülte seçin",
+        "select_language": "Dil seçin",
+        "select_teaching_mode": "Ders verme şekli seçin",
+        "select_university": "Üniversite seçin",
+        "select_department": "Bölüm seçin",
+        "current_faculty": "Mevcut Fakülte",
+        "preferred_teaching_language": "Tercih Edilen Ders Dili",
+        "preferred_teaching_mode": "Tercih Edilen Ders Verme Şekli",
+        "complete_registration": "Kaydı Tamamla",
+        "next": "İleri",
+        "full_name_placeholder": "Ad soyad girin",
+        "rank_research_assistant": "Araştırma Görevlisi",
+        "rank_lecturer": "Öğretim Görevlisi",
+        "rank_assistant_professor": "Doktor Öğretim Üyesi",
+        "rank_associate_professor": "Doçent",
+        "rank_professor": "Profesör",
+        "faculty_engineering": "Mühendislik",
+        "faculty_medicine": "Tıp",
+        "faculty_law": "Hukuk",
+        "faculty_education": "Eğitim",
+        "faculty_arts_sciences": "Fen-Edebiyat",
+        "faculty_economics_admin": "İktisadi ve İdari Bilimler",
+        "language_english": "İngilizce",
+        "language_turkish": "Türkçe",
+        "language_turkish_english": "Türkçe ve İngilizce",
+        "language_french": "Fransızca",
+        "language_german": "Almanca",
+        "language_arabic": "Arapça",
+        "language_italian": "İtalyanca",
+        "language_russian": "Rusça",
+        "language_chinese": "Çince",
+        "language_spanish": "İspanyolca",
+        "mode_face_to_face": "Yüz yüze",
+        "mode_hybrid": "Hibrit",
+        "city_istanbul": "İstanbul",
+        "city_ankara": "Ankara",
+        "city_izmir": "İzmir",
+        "city_bursa": "Bursa",
+        "city_antalya": "Antalya",
+        "university_detected": "Üniversite algılandı",
+        "error_valid_university_email": "Lütfen geçerli bir üniversite e-postası kullanın.",
+        "error_password_length": "Şifre en az 8 karakter uzunluğunda olmalıdır.",
+        "error_passwords_do_not_match": "Şifreler eşleşmiyor.",
+        "error_email_registered": "Bu e-posta zaten kayıtlı. Lütfen giriş yapın.",
+        "error_incorrect_password": "Şifre hatalı. Lütfen tekrar deneyin.",
+        "error_email_not_registered": "Bu e-posta henüz kayıtlı değil. Lütfen önce kayıt olun.",
 
 
     }
@@ -386,6 +536,12 @@ def get_translations():
     lang = get_language()
     return translations.get(lang, translations["en"])
 
+def public_template_context():
+    return {
+        "t": get_translations(),
+        "lang": get_language(),
+    }
+
 def profile_back_url(user_id):
     back_url = request.args.get("back_url")
 
@@ -433,7 +589,7 @@ def calculate_match(u1, u2):
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return render_template("index.html", **public_template_context())
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -444,8 +600,8 @@ def login():
         password = request.form["password"]
 
         if not university_email(email):
-            error = "Please use a valid university email."
-            return render_template("login.html", error=error)
+            error = get_translations()["error_valid_university_email"]
+            return render_template("login.html", error=error, **public_template_context())
 
         conn = sqlite3.connect("database.db")
         conn.row_factory = sqlite3.Row
@@ -472,13 +628,13 @@ def login():
                 conn.close()
                 return redirect("/dashboard")
 
-            error = "Incorrect password. Please try again."
+            error = get_translations()["error_incorrect_password"]
         else:
-            error = "This email is not registered yet. Please register first."
+            error = get_translations()["error_email_not_registered"]
 
         conn.close()
 
-    return render_template("login.html", error=error)
+    return render_template("login.html", error=error, **public_template_context())
 
 @app.route("/logout")
 def logout():
@@ -507,19 +663,22 @@ def register():
         if not university_email(email):
             return render_template(
                 "register.html",
-                error="Please use a valid university email."
+                error=get_translations()["error_valid_university_email"],
+                **public_template_context()
             )
 
         if len(password) < 8:
             return render_template(
                 "register.html",
-                error="Password must be at least 8 characters long."
+                error=get_translations()["error_password_length"],
+                **public_template_context()
             )
 
         if password != confirm_password:
             return render_template(
                 "register.html",
-                error="Passwords do not match."
+                error=get_translations()["error_passwords_do_not_match"],
+                **public_template_context()
             )
 
         conn = sqlite3.connect("database.db")
@@ -532,7 +691,8 @@ def register():
             conn.close()
             return render_template(
                 "register.html",
-                error="This email is already registered. Please login instead."
+                error=get_translations()["error_email_registered"],
+                **public_template_context()
             )
 
         cursor.execute("""
@@ -556,7 +716,7 @@ def register():
         session["email"] = email
         return redirect("/dashboard")
 
-    return render_template("register.html")
+    return render_template("register.html", **public_template_context())
 
 @app.route("/dashboard")
 def dashboard():
@@ -960,5 +1120,3 @@ def set_language(language):
 if __name__ == "__main__":
     init_db()
     app.run(debug=True)
-
-
